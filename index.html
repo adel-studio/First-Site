@@ -3,130 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Furniture Concierge — Coming Soon</title>
-  <meta name="description" content="Your AI-powered furniture concierge. Curated picks from CB2, West Elm, Crate & Barrel, Serena & Lily, Lulu & Georgia — personalized to your taste.">
+  <title>Adel — Coming Soon</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="nav">
-    <div class="container nav-inner">
-      <div class="brand">
-        <div class="logo">FA</div>
-        <div class="brand-name">Furniture Concierge</div>
-      </div>
-      <a class="btn small" href="#waitlist">Join waitlist</a>
+  <main class="hero">
+    <div class="container">
+      <h1>Adel</h1>
+      <p class="tagline">
+        Your AI furniture concierge. Curated picks from brands you love, personalized to your taste.
+      </p>
+      <ul class="bullets">
+        <li>Top 3 picks in seconds, plus 10 more you’ll actually like.</li>
+        <li>Personalized by a Taste Engine that learns from your saves.</li>
+        <li>Direct purchase links — no endless tabs.</li>
+      </ul>
+      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="signup">
+        <input type="email" name="email" placeholder="Enter your email" required>
+        <button type="submit">Join the waitlist</button>
+      </form>
+      <p class="note">We’ll only email you about launch updates. No spam.</p>
     </div>
-  </header>
-
-  <main>
-    <section class="hero container">
-      <div class="hero-copy">
-        <h1>Your AI furniture concierge.</h1>
-        <p class="lead">
-          We search upscale retailers and curate pieces that fit <strong>your</strong> style, budget, and space—no designer markup, no endless tabs.
-        </p>
-        <ul class="bullets">
-          <li>Top 3 picks in seconds, plus 10 more you’ll actually like.</li>
-          <li>Personalized by a Taste Engine that learns from your saves.</li>
-          <li>Direct purchase links from brands you love.</li>
-        </ul>
-        <div id="waitlist" class="signup">
-          <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="signup-form" onsubmit="return handleSubmit(event)">
-            <input type="email" name="email" placeholder="Enter your email" required aria-label="Email">
-            <button type="submit" class="btn">Join the waitlist</button>
-          </form>
-          <p id="form-status" class="status" role="status" aria-live="polite"></p>
-          <small class="note">We’ll only email you about launch updates. No spam.</small>
-        </div>
-      </div>
-      <div class="hero-card">
-        <div class="card">
-          <div class="card-image"></div>
-          <div class="card-body">
-            <h3>Curated · Modern Coastal</h3>
-            <p>Preview how your top 3 recs might look. Clean lines, performance fabric, under $3k.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="partners container">
-      <h2>Exploring partnerships with</h2>
-      <div class="logo-row">
-        <span>CB2</span><span>West Elm</span><span>Crate & Barrel</span><span>Serena & Lily</span><span>Lulu & Georgia</span>
-      </div>
-    </section>
-
-    <section class="how-it-works container">
-      <h2>How it works</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <h3>Tell us your style</h3>
-          <p>Quick quiz (with images) builds a taste profile tailored to you.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <h3>See your top 3 picks</h3>
-          <p>Get the best fits instantly, plus more if you want to explore.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <h3>Buy with confidence</h3>
-          <p>Click through to trusted retailers. No hidden fees, ever.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="faq container">
-      <h2>FAQ</h2>
-      <details>
-        <summary>Is this free?</summary>
-        <p>Yes. We make money via affiliate partnerships and select brand sponsorships—no extra cost to you.</p>
-      </details>
-      <details>
-        <summary>When are you launching?</summary>
-        <p>Private beta opens soon. Join the waitlist to get early access.</p>
-      </details>
-      <details>
-        <summary>Which brands will be included?</summary>
-        <p>We’re starting with CB2, West Elm, Crate & Barrel, Serena & Lily, and Lulu & Georgia, then expanding.</p>
-      </details>
-    </section>
   </main>
-
-  <footer class="footer">
-    <div class="container footer-inner">
-      <span>© <span id="year"></span> Furniture Concierge</span>
-      <a href="#waitlist">Join waitlist</a>
-    </div>
-  </footer>
-
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-  async function handleSubmit(e) {
-    const form = e.target;
-    const status = document.getElementById('form-status');
-    if (!form || form.tagName !== 'FORM') return true;
-    e.preventDefault();
-    status.textContent = 'Submitting...';
-    try {
-      const data = new FormData(form);
-      const resp = await fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
-      if (resp.ok) {
-        form.reset();
-        status.textContent = 'Thanks — you’re on the list!';
-      } else {
-        status.textContent = 'Something went wrong. Try again.';
-      }
-    } catch (err) {
-      status.textContent = 'Network error. Please retry.';
-    }
-    return false;
-  }
-</script>
 </body>
 </html>
