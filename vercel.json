@@ -1,0 +1,14 @@
+{
+  "trailingSlash": false,
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/about",
+      "dest": "/about.html"
+    },
+    {
+      "src": "/privacy",
+      "dest": "/privacy.html"
+    }
+  ]
+}
