@@ -26,6 +26,13 @@
     <div id="more-10" class="grid"></div>
   </section>
 
+  <!-- Optional Search -->
+<section>
+  <h2>Search Products</h2>
+  <input id="search" placeholder="Search (e.g., sofa, marble, walnut)" />
+  <div id="results" class="grid" style="margin-top: 12px;"></div>
+</section>
+
   <!-- Config (your Supabase URL + anon key) -->
   <script src="/config.js"></script>
 
@@ -70,6 +77,26 @@
     }
 
     loadProducts();
+    // --- SEARCH FEATURE ---
+const searchBox = document.querySelector('#search');
+searchBox?.addEventListener('input', debounce(runSearch, 300));
+
+async function runSearch() {
+  const q = searchBox.value.trim();
+  if (!q) { document.querySelector('#results').innerHTML = ''; return; }
+
+  const { data, error } = await client
+    .from('products')
+    .select('*')
+    .or(`title.ilike.%${q}%,brand.ilike.%${q}%,category.ilike.%${q}%`)
+    .limit(20);
+
+  if (error) return console.error(error);
+  document.querySelector('#results').innerHTML = (data||[]).map(cardHTML).join('');
+}
+
+function debounce(fn, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
+
   </script>
 </body>
 </html>
