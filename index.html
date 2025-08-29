@@ -6,6 +6,7 @@
   <title>Furniture App PoC</title>
   <style>
     body { font-family: sans-serif; margin: 20px; }
+    h1 { margin-bottom: 24px; }
     h2 { margin-top: 32px; }
     .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
     .card { border: 1px solid #eee; border-radius: 12px; padding: 12px; background: #fafafa; }
@@ -26,12 +27,11 @@
     <div id="more-10" class="grid"></div>
   </section>
 
-  <!-- Optional Search -->
-<section>
-  <h2>Search Products</h2>
-  <input id="search" placeholder="Search (e.g., sofa, marble, walnut)" />
-  <div id="results" class="grid" style="margin-top: 12px;"></div>
-</section>
+  <section>
+    <h2>Search Products</h2>
+    <input id="search" placeholder="Search (e.g., sofa, marble, walnut)" />
+    <div id="results" class="grid" style="margin-top: 12px;"></div>
+  </section>
 
   <!-- Config (your Supabase URL + anon key) -->
   <script src="/config.js"></script>
@@ -44,20 +44,25 @@
     const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
     async function loadProducts() {
-      const { data: featured } = await client
+      // Top 3 featured
+      const { data: featured, error: fErr } = await client
         .from('products')
         .select('*')
         .eq('featured', true)
         .order('created_at', { ascending: false })
         .limit(3);
+      if (fErr) console.error(fErr);
 
-      const { data: more } = await client
+      // Next 10 non-featured
+      const { data: more, error: mErr } = await client
         .from('products')
         .select('*')
         .eq('featured', false)
         .order('created_at', { ascending: false })
         .limit(10);
+      if (mErr) console.error(mErr);
 
+      // Render both sections
       render('#top-3', featured || []);
       render('#more-10', more || []);
     }
@@ -69,34 +74,55 @@
         <article class="card">
           <img src="${p.image_url || ''}" alt="${p.title || ''}" />
           <h3>${p.title || ''}</h3>
-          <p>${(p.brand||'')}${p.brand&&p.category?' • ':''}${p.category||''}</p>
-          <p>${p.price ? ('$' + Number(p.price).toFixed(2) + ' ' + (p.currency||'USD')) : ''}</p>
+          <p>${(p.brand || '')}${p.brand && p.category ? ' • ' : ''}${p.category || ''}</p>
+          <p>${p.price ? ('$' + Number(p.price).toFixed(2) + ' ' + (p.currency || 'USD')) : ''}</p>
           <a href="${p.product_url || '#'}" target="_blank" rel="noopener">View</a>
         </article>
       `).join('');
     }
 
-    loadProducts();
     // --- SEARCH FEATURE ---
-const searchBox = document.querySelector('#search');
-searchBox?.addEventListener('input', debounce(runSearch, 300));
+    const searchBox = document.querySelector('#search');
+    searchBox?.addEventListener('input', debounce(runSearch, 300));
 
-async function runSearch() {
-  const q = searchBox.value.trim();
-  if (!q) { document.querySelector('#results').innerHTML = ''; return; }
+    async function runSearch() {
+      const q = searchBox.value.trim();
+      if (!q) {
+        document.querySelector('#results').innerHTML = '';
+        return;
+      }
 
-  const { data, error } = await client
-    .from('products')
-    .select('*')
-    .or(`title.ilike.%${q}%,brand.ilike.%${q}%,category.ilike.%${q}%`)
-    .limit(20);
+      const { data, error } = await client
+        .from('products')
+        .select('*')
+        .or(`title.ilike.%${q}%,brand.ilike.%${q}%,category.ilike.%${q}%`)
+        .limit(20);
 
-  if (error) return console.error(error);
-  document.querySelector('#results').innerHTML = (data||[]).map(cardHTML).join('');
-}
+      if (error) {
+        console.error(error);
+        return;
+      }
 
-function debounce(fn, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
+      document.querySelector('#results').innerHTML = (data || []).map(p => `
+        <article class="card">
+          <img src="${p.image_url || ''}" alt="${p.title || ''}" />
+          <h3>${p.title || ''}</h3>
+          <p>${(p.brand || '')}${p.brand && p.category ? ' • ' : ''}${p.category || ''}</p>
+          <p>${p.price ? ('$' + Number(p.price).toFixed(2) + ' ' + (p.currency || 'USD')) : ''}</p>
+          <a href="${p.product_url || '#'}" target="_blank" rel="noopener">View</a>
+        </article>
+      `).join('');
+    }
 
+    function debounce(fn, wait) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), wait);
+      };
+    }
+
+    loadProducts();
   </script>
 </body>
 </html>
