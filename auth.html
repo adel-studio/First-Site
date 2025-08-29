@@ -56,15 +56,11 @@
       }
 
       if (data.session) {
-        // User is logged in
-        const user = data.session.user;
-        const firstName = user.user_metadata?.firstName || "";
-        document.getElementById('form').style.display = "none";
-        document.getElementById('status').innerHTML = `
-          <p>Login successful! ${firstName ? "Welcome, " + firstName + "!" : ""}</p>
-          <p><a href="/index.html">Go to Homepage</a></p>
-        `;
-      }
+  // User is logged in → send them to quiz
+  window.location.href = "/quiz.html"
+    ;
+}
+
     }
 
     handleRedirect();
