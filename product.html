@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Detail</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    img { max-width: 500px; width: 100%; border-radius: 12px; margin-bottom: 16px; }
+    .back { margin-bottom: 20px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <a href="/index.html" class="back">← Back to Home</a>
+  <div id="product"></div>
+
+  <!-- Config + Supabase -->
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    async function loadProduct() {
+      const { data, error } = await client
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        document.getElementById('product').innerHTML = "<p>Product not found.</p>";
+        console.error(error);
+        return;
+      }
+
+      document.getElementById('product').innerHTML = `
+        <h1>${data.title}</h1>
+        <img src="${data.image_url}" alt="${data.title}" />
+        <p><strong>Brand:</strong> ${data.brand || ''}</p>
+        <p><strong>Category:</strong> ${data.category || ''}</p>
+        <p><strong>Price:</strong> ${data.price ? '$' + Number(data.price).toFixed(2) : ''}</p>
+        <p><a href="${data.product_url}" target="_blank" rel="noopener">Buy Now</a></p>
+      `;
+    }
+
+    loadProduct();
+  </script>
+</body>
+</html>
