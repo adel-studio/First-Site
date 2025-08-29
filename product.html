@@ -37,13 +37,14 @@
       }
 
       document.getElementById('product').innerHTML = `
-        <h1>${data.title}</h1>
-        <img src="${data.image_url}" alt="${data.title}" />
-        <p><strong>Brand:</strong> ${data.brand || ''}</p>
-        <p><strong>Category:</strong> ${data.category || ''}</p>
-        <p><strong>Price:</strong> ${data.price ? '$' + Number(data.price).toFixed(2) : ''}</p>
-        <p><a href="${data.product_url}" target="_blank" rel="noopener">Buy Now</a></p>
-      `;
+  <h1>${data.title}</h1>
+  <img src="${data.image_url}" alt="${data.title}" />
+  <p><strong>Brand:</strong> ${data.brand || ''}</p>
+  <p><strong>Category:</strong> ${data.category || ''}</p>
+  <p><strong>Price:</strong> ${data.price ? '$' + Number(data.price).toFixed(2) : ''}</p>
+  <p>${data.description || ''}</p>
+  <p><a href="${data.product_url}" target="_blank" rel="noopener">Buy Now</a></p>
+`;
     }
 
     loadProduct();
