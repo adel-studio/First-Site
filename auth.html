@@ -3,19 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
+  <style>
+    body { font-family: sans-serif; margin: 40px; max-width: 500px; }
+    h2 { margin-bottom: 16px; }
+    input { display: block; margin-bottom: 12px; padding: 8px; width: 100%; }
+    button { padding: 10px 16px; cursor: pointer; }
+    #status { margin-top: 20px; }
+  </style>
 </head>
 <body>
   <h2>Sign Up / Sign In</h2>
-  <input id="firstName" type="text" placeholder="First Name" />
-  <input id="lastName" type="text" placeholder="Last Name" />
-  <input id="email" type="email" placeholder="Email" />
-  <button onclick="signIn()">Send Magic Link</button>
+
+  <div id="form">
+    <input id="firstName" type="text" placeholder="First Name" />
+    <input id="lastName" type="text" placeholder="Last Name" />
+    <input id="email" type="email" placeholder="Email" />
+    <button onclick="signIn()">Send Magic Link</button>
+  </div>
+
+  <div id="status"></div>
 
   <script src="/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
+    // Handle sign-in request
     async function signIn() {
       const email = document.querySelector('#email').value;
       const firstName = document.querySelector('#firstName').value;
@@ -24,14 +37,37 @@
       const { error } = await client.auth.signInWithOtp({
         email,
         options: {
-          data: { firstName, lastName } // goes into user_metadata
+          data: { firstName, lastName } // save into user_metadata
         }
       });
 
-      if (error) alert(error.message);
-      else alert('Check your email for the magic link!');
+      document.getElementById('status').textContent = error 
+        ? error.message 
+        : "Check your email for the magic link!";
     }
+
+    // Handle redirect after clicking magic link
+    async function handleRedirect() {
+      const { data, error } = await client.auth.getSession();
+
+      if (error) {
+        document.getElementById('status').textContent = "Login error: " + error.message;
+        return;
+      }
+
+      if (data.session) {
+        // User is logged in
+        const user = data.session.user;
+        const firstName = user.user_metadata?.firstName || "";
+        document.getElementById('form').style.display = "none";
+        document.getElementById('status').innerHTML = `
+          <p>Login successful! ${firstName ? "Welcome, " + firstName + "!" : ""}</p>
+          <p><a href="/index.html">Go to Homepage</a></p>
+        `;
+      }
+    }
+
+    handleRedirect();
   </script>
 </body>
 </html>
-
