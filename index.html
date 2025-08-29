@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Furniture App PoC</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    h2 { margin-top: 32px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .card { border: 1px solid #eee; border-radius: 12px; padding: 12px; background: #fafafa; }
+    .card img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>Furniture Picks</h1>
+
+  <section>
+    <h2>Top 3 Picks</h2>
+    <div id="top-3" class="grid"></div>
+  </section>
+
+  <section>
+    <h2>More You Might Like</h2>
+    <div id="more-10" class="grid"></div>
+  </section>
+
+  <!-- Config (your Supabase URL + anon key) -->
+  <script src="/config.js"></script>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- App logic -->
+  <script>
+    const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+    async function loadProducts() {
+      const { data: featured } = await client
+        .from('products')
+        .select('*')
+        .eq('featured', true)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      const { data: more } = await client
+        .from('products')
+        .select('*')
+        .eq('featured', false)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      render('#top-3', featured || []);
+      render('#more-10', more || []);
+    }
+
+    function render(sel, items) {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      el.innerHTML = items.map(p => `
+        <article class="card">
+          <img src="${p.image_url || ''}" alt="${p.title || ''}" />
+          <h3>${p.title || ''}</h3>
+          <p>${(p.brand||'')}${p.brand&&p.category?' • ':''}${p.category||''}</p>
+          <p>${p.price ? ('$' + Number(p.price).toFixed(2) + ' ' + (p.currency||'USD')) : ''}</p>
+          <a href="${p.product_url || '#'}" target="_blank" rel="noopener">View</a>
+        </article>
+      `).join('');
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>
