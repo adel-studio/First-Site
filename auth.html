@@ -5,8 +5,10 @@
   <title>Login</title>
 </head>
 <body>
-  <h2>Sign In</h2>
-  <input id="email" type="email" placeholder="Enter your email" />
+  <h2>Sign Up / Sign In</h2>
+  <input id="firstName" type="text" placeholder="First Name" />
+  <input id="lastName" type="text" placeholder="Last Name" />
+  <input id="email" type="email" placeholder="Email" />
   <button onclick="signIn()">Send Magic Link</button>
 
   <script src="/config.js"></script>
@@ -16,10 +18,20 @@
 
     async function signIn() {
       const email = document.querySelector('#email').value;
-      const { error } = await client.auth.signInWithOtp({ email });
+      const firstName = document.querySelector('#firstName').value;
+      const lastName = document.querySelector('#lastName').value;
+
+      const { error } = await client.auth.signInWithOtp({
+        email,
+        options: {
+          data: { firstName, lastName } // goes into user_metadata
+        }
+      });
+
       if (error) alert(error.message);
       else alert('Check your email for the magic link!');
     }
   </script>
 </body>
 </html>
+
