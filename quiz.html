@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Taste Quiz</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    h1 { margin-bottom: 24px; }
+    .question { margin-bottom: 20px; }
+    button { padding: 10px 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Discover Your Style</h1>
+
+  <div id="quiz">
+    <div class="question">
+      <p><strong>1. What style speaks to you most?</strong></p>
+      <label><input type="radio" name="style" value="Minimalist"> Minimalist</label><br>
+      <label><input type="radio" name="style" value="Mid-Century"> Mid-Century</label><br>
+      <label><input type="radio" name="style" value="Rustic"> Rustic</label><br>
+      <label><input type="radio" name="style" value="Modern"> Modern</label>
+    </div>
+
+    <div class="question">
+      <p><strong>2. What’s your ideal budget range?</strong></p>
+      <label><input type="radio" name="budget" value="<$500"> <$500</label><br>
+      <label><input type="radio" name="budget" value="$500-$1500"> $500–$1500</label><br>
+      <label><input type="radio" name="budget" value="$1500-$3000"> $1500–$3000</label><br>
+      <label><input type="radio" name="budget" value="$3000+"> $3000+</label>
+    </div>
+
+    <div class="question">
+      <p><strong>3. Which room are you focused on?</strong></p>
+      <label><input type="radio" name="room" value="Living Room"> Living Room</label><br>
+      <label><input type="radio" name="room" value="Bedroom"> Bedroom</label><br>
+      <label><input type="radio" name="room" value="Dining Room"> Dining Room</label><br>
+      <label><input type="radio" name="room" value="Office"> Office</label>
+    </div>
+
+    <button onclick="submitQuiz()">Save My Answers</button>
+  </div>
+
+  <div id="status"></div>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+    async function submitQuiz() {
+      const style = document.querySelector('input[name="style"]:checked')?.value;
+      const budget = document.querySelector('input[name="budget"]:checked')?.value;
+      const room = document.querySelector('input[name="room"]:checked')?.value;
+
+      const { data: { user } } = await client.auth.getUser();
+      if (!user) {
+        document.getElementById('status').textContent = "Please sign in first!";
+        return;
+      }
+
+      const answers = { style, budget, room };
+
+      const { error } = await client
+        .from('quiz_responses')
+        .insert([{ user_id: user.id, answers }]);
+
+      if (error) {
+        document.getElementById('status').textContent = "Error: " + error.message;
+      } else {
+        document.getElementById('quiz').style.display = "none";
+        document.getElementById('status').innerHTML = `
+          <p>Thanks! Your answers are saved.</p>
+          <p><a href="/index.html">Back to Homepage</a></p>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
