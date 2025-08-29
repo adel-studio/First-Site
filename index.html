@@ -21,7 +21,7 @@
     <h1>Furniture App</h1>
     <ul>
       <li><a href="/index.html">Home</a></li>
-      <li><a href="/auth.html">Sign In</a></li>
+      <li><a id="auth-link" href="/auth.html">Sign In</a></li>
     </ul>
   </nav>
 </header>
@@ -57,6 +57,38 @@
     text-decoration: underline; 
   }
 </style>
+
+<!-- Config + Supabase -->
+<script src="/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+  async function updateAuthLink() {
+    const { data: { user } } = await client.auth.getUser();
+    const link = document.getElementById('auth-link');
+
+    if (user) {
+      // If logged in → show "Sign Out"
+      link.textContent = "Sign Out";
+      link.href = "#";
+      link.onclick = async (e) => {
+        e.preventDefault();
+        await client.auth.signOut();
+        alert("Signed out");
+        updateAuthLink(); // refresh the header
+      };
+    } else {
+      // If logged out → show "Sign In"
+      link.textContent = "Sign In";
+      link.href = "/auth.html";
+      link.onclick = null;
+    }
+  }
+
+  // Run on page load
+  updateAuthLink();
+</script>
   
   <h1>Furniture Picks</h1>
 
