@@ -103,25 +103,30 @@
   }
   updateAuthLink();
 
+  // --- REQUIRE LOGIN + QUIZ COMPLETION ---
   async function requireQuiz() {
-  const { data: { user } } = await client.auth.getUser();
-  if (!user) {
-    window.location.href = "/auth.html";
-    return;
-  }
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) {
+      // Not logged in → send to login page
+      window.location.href = "/auth.html";
+      return;
+    }
 
-  const { data: responses, error } = await client
-    .from('quiz_responses')
-    .select('*')
-    .eq('user_id', user.id)
-    .limit(1);
+    const { data: responses, error } = await client
+      .from('quiz_responses')
+      .select('*')
+      .eq('user_id', user.id)
+      .limit(1);
 
-  if (error || responses.length === 0) {
-    window.location.href = "/quiz.html";
-    return;
+    if (error || responses.length === 0) {
+      // No quiz answers yet → send to quiz
+      window.location.href = "/quiz.html";
+      return;
+    }
+
+    // If user + quiz answers exist → load products
+    loadProducts();
   }
-}
-requireQuiz();
 
   // --- LOAD PRODUCTS ---
   async function loadProducts() {
@@ -187,7 +192,7 @@ requireQuiz();
         <h3>${p.title || ''}</h3>
         <p>${(p.brand || '')}${p.brand && p.category ? ' • ' : ''}${p.category || ''}</p>
         <p>${p.price ? ('$' + Number(p.price).toFixed(2) + ' ' + (p.currency || 'USD')) : ''}</p>
-        <a href="${p.product_url || '#'}" target="_blank" rel="noopener">View</a>
+        <a href="/product.html?id=${p.id}">View Details</a>
       </article>
     `).join('');
   }
@@ -200,7 +205,6 @@ requireQuiz();
     };
   }
 
-  loadProducts();
+  // 🚦 Kick off the flow
+  requireQuiz();
 </script>
-</body>
-</html>
