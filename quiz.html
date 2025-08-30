@@ -50,31 +50,6 @@
 
   <div id="status"></div>
 
-        <form id="quiz-form">
-  <label>Style:</label><br>
-  <select name="style" required>
-    <option value="Mid-Century">Mid-Century</option>
-    <option value="Modern">Modern</option>
-    <option value="Boho">Boho</option>
-  </select><br><br>
-
-  <label>Budget:</label><br>
-  <select name="budget" required>
-    <option value="<$500">Under $500</option>
-    <option value="$500-$1500">$500–$1500</option>
-    <option value="$1500+">$1500+</option>
-  </select><br><br>
-
-  <label>Room:</label><br>
-  <select name="room" required>
-    <option value="Living Room">Living Room</option>
-    <option value="Bedroom">Bedroom</option>
-    <option value="Dining Room">Dining Room</option>
-  </select><br><br>
-
-  <button type="submit">See My Matches</button>
-</form>
-
   <script src="/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -112,40 +87,5 @@ function goToMatches() {
     }
   </script>
 
-        <script>
-  const form = document.getElementById("quiz-form");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    // Grab answers from the form
-    const answers = {
-      style: form.style.value,
-      budget: form.budget.value,
-      room: form.room.value
-    };
-
-    // Get the logged-in user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      alert("You need to log in first.");
-      return;
-    }
-
-    // Save quiz response to Supabase
-    const { error } = await supabase
-      .from("quiz_responses")
-      .insert([{ user_id: user.id, answers }]);
-
-    if (error) {
-      console.error("Error saving quiz:", error);
-      alert("Something went wrong saving your quiz.");
-      return;
-    }
-
-    // Redirect to products page
-    window.location.href = "products.html";
-  });
-</script>
 </body>
 </html>
