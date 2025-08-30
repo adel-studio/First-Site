@@ -46,18 +46,39 @@
 
       let query = client.from("products").select("*");
 
-//      if (answers.style) {
-//  query = query.contains("tags", [answers.style]); // no .toLowerCase()
-//}
-//if (answers.budget === "<$500") {
-//  query = query.lt("price", 500);
-//}
-//if (answers.budget === "$500-$1500") {
-//  query = query.gte("price", 500).lte("price", 1500);
-//}
-//if (answers.room) {
-//  query = query.eq("category", answers.room);
-//}
+console.log("Quiz answers:", answers);
+
+if (answers.style) {
+  // Match tags exactly as stored in Supabase
+  query = query.contains("tags", [answers.style]);
+}
+
+if (answers.budget === "<$500") {
+  query = query.lt("price", 500);
+}
+if (answers.budget === "$500-$1500") {
+  query = query.gte("price", 500).lte("price", 1500);
+}
+if (answers.budget === "$1500-$3000") {
+  query = query.gte("price", 1500).lte("price", 3000);
+}
+if (answers.budget === "$3000+") {
+  query = query.gte("price", 3000);
+}
+
+// Room → map to actual product categories
+if (answers.room === "Living Room") {
+  query = query.in("category", ["Sofa", "Chair", "Coffee Table"]);
+}
+if (answers.room === "Bedroom") {
+  query = query.in("category", ["Bed", "Nightstand", "Dresser"]);
+}
+if (answers.room === "Dining Room") {
+  query = query.in("category", ["Dining Table", "Dining Chair", "Sideboard"]);
+}
+if (answers.room === "Office") {
+  query = query.in("category", ["Desk", "Desk Chair", "Bookcase"]);
+}
 
       const { data, error } = await query.limit(20);
       if (error) {
