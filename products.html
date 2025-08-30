@@ -68,16 +68,16 @@ if (answers.budget === "$3000+") {
 
 // Room → map to actual product categories
 if (answers.room === "Living Room") {
-  query = query.in("category", ["Sofa", "Chair", "Coffee Table"]);
+  query = query.in("category", ["chair", "sofa", "coffee table"]);
 }
 if (answers.room === "Bedroom") {
-  query = query.in("category", ["Bed", "Nightstand", "Dresser"]);
+  query = query.in("category", ["bed", "nightstand", "dresser"]);
 }
 if (answers.room === "Dining Room") {
-  query = query.in("category", ["Dining Table", "Dining Chair", "Sideboard"]);
+  query = query.in("category", ["dining table", "dining chair", "sideboard"]);
 }
 if (answers.room === "Office") {
-  query = query.in("category", ["Desk", "Desk Chair", "Bookcase"]);
+  query = query.in("category", ["desk", "desk chair", "bookcase"]);
 }
 
       const { data, error } = await query.limit(20);
