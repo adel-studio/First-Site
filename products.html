@@ -47,7 +47,7 @@
       let query = client.from("products").select("*");
 
       if (answers.style) {
-        query = query.contains("tags", [answers.style.toLowerCase()]);
+        query = query.contains("tags", [answers.style()]);
       }
       if (answers.budget === "<$500") {
         query = query.lt("price", 500);
