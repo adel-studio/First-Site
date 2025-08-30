@@ -9,13 +9,15 @@
     .question { margin-bottom: 20px; }
     button { padding: 10px 16px; cursor: pointer; }
   </style>
+
+  <!-- Supabase -->
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
-<script>
-  const supabase = window.supabase.createClient(
-    "https://nqcmlwtwsfivcyarurwr.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xY21sd3R3c2ZpdmN5YXJ1cndyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY0ODM0MDIsImV4cCI6MjA3MjA1OTQwMn0.UGie7ib7PYIZHQcGpwQKk5O2xGMvn5_NCDGKEht1biQ"
-  );
-</script>
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://nqcmlwtwsfivcyarurwr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xY21sd3R3c2ZpdmN5YXJ1cndyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY0ODM0MDIsImV4cCI6MjA3MjA1OTQwMn0.UGie7ib7PYIZHQcGpwQKk5O2xGMvn5_NCDGKEht1biQ"
+    );
+  </script>
 </head>
 <body>
   <h1>Discover Your Style</h1>
@@ -50,17 +52,13 @@
 
   <div id="status"></div>
 
-  <script src="/config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-
     async function submitQuiz() {
       const style = document.querySelector('input[name="style"]:checked')?.value;
       const budget = document.querySelector('input[name="budget"]:checked')?.value;
       const room = document.querySelector('input[name="room"]:checked')?.value;
 
-      const { data: { user } } = await client.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         document.getElementById('status').textContent = "Please sign in first!";
         return;
@@ -68,24 +66,21 @@
 
       const answers = { style, budget, room };
 
-      const { error } = await client
+      const { error } = await supabase
         .from('quiz_responses')
         .insert([{ user_id: user.id, answers }]);
 
       if (error) {
-        document.getElementById('quiz').style.display = "none";
-        document.getElementById('status').innerHTML = `
-          <p>Great! Your answers are saved.</p>
-          <button onclick="goToMatches()">Show Me My Matches</button>
-       `;
-
-function goToMatches() {
-  window.location.href = "/index.html";
-}
-
+        console.error("Error saving quiz:", error);
+        alert("Something went wrong saving your quiz.");
+        return;
       }
+
+      // ✅ Success: redirect to products.html
+      window.location.href = "products.html";
     }
   </script>
 
 </body>
 </html>
+
